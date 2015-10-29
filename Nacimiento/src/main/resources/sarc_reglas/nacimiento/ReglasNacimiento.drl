@@ -1,0 +1,256 @@
+package sarc_reglas.nacimiento;
+import sarc_reglas.nacimiento.Nacimiento;
+
+dialect "mvel"
+
+rule "01 NACIMIENTO - Caso Madre y Padre Presentes"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 0", 
+							   estaMadreYPadrePresentes == true,
+							   vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_PRESENTES)      
+    then     	
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 01 ******");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES);
+        System.out.println("");
+
+        nacimiento.setEscenario("GATE 1");
+        nacimiento.setAccion(vista);
+        nacimiento.setContinuarEvaluando(true);
+	end
+
+rule "02 NACIMIENTO - Caso Madre Presente o Padre Presente"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 0") and 
+                   (Nacimiento(estaMadrePresente == true, vista: Nacimiento.ACCION_VISTA_MADRE_PRESENTE) or
+                    Nacimiento(estaPadrePresente == true, vista: Nacimiento.ACCION_VISTA_PADRE_PRESENTE)
+                   )
+    then  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 02 ******");
+        System.out.println("=====> Drools: ES " + Nacimiento.CASO_MADRE_O_PADRE_PRESENTE);
+        System.out.println("");
+
+        nacimiento.setEscenario("GATE 2");
+        nacimiento.setAccion(vista);
+        nacimiento.setContinuarEvaluando(true);
+    end
+	
+rule "03 NACIMIENTO - Caso Madre y Padre No Presentes"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 0",
+							   estaMadreYPadrePresentes == false,
+							   estaRepresentanteConID == true,
+							   vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_NO_PRESENTES_AUTENTICAR_3,
+							   cantidad: 3
+							   )      
+    then     	
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 03 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_NO_PRESENTES);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 3");
+        nacimiento.setAccion(vista);
+        nacimiento.setContinuarEvaluando(false);
+	end
+	
+rule "04 NACIMIENTO - Caso Madre y Padre Presentes, ambos con ID"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 1", 
+							   estaMadreConID == true, 
+							   estaPadreConID == true,
+							   vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_PRESENTES_AUTENTICAR_4,
+							   cantidad: 4
+							   )      
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 04 ******");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES_AMBOS_CON_ID);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 1.1");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(false);
+    end
+	
+rule "05 NACIMIENTO - Caso Madre y Padre Presentes, ambos sin ID"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 1",
+							   estaMadreConID == false,
+							   estaPadreConID == false,
+							   vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID
+							   )      
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 05 ******");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID);
+        System.out.println("");
+
+        nacimiento.setEscenario("GATE 1.2");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(true);
+    end
+	
+rule "06 NACIMIENTO - Caso Madre y Padre Presentes, alguno sin ID"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 1") and 
+					(Nacimiento(estaMadreConID == true, estaPadreConID == false, vista: Nacimiento.ACCION_VISTA_PADRE_SIN_ID) or
+					 Nacimiento(estaMadreConID == false, estaPadreConID == true, vista: Nacimiento.ACCION_VISTA_MADRE_SIN_ID)
+					) 
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 06 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES_ALGUNO_SIN_ID);
+        System.out.println("");
+
+        nacimiento.setEscenario("GATE 1.3");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(true);
+    end
+	
+rule "07 NACIMIENTO - Caso Madre y Padre Presentes, ambos sin ID, Madre con DJ y Padre con DJ o sin DJ"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 1.2", estaMadreConDJ == true) and
+					(Nacimiento(estaPadreConDJ == true, vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID_AUTENTICAR_6, cantidad: 6)  or
+					 Nacimiento(estaPadreConDJ == false, vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID_AUTENTICAR_4, cantidad: 4)
+					)	
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 07 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID_MADRE_CON_DJ);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 1.2.1");
+        nacimiento.setAccion(vista);
+        nacimiento.setContinuarEvaluando(false);
+    end
+	
+rule "08 NACIMIENTO - Caso Madre y Padre Presentes, ambos sin ID, Madre sin DJ y Padre con DJ o sin DJ"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 1.2", estaMadreConDJ == false) and
+					(Nacimiento(estaPadreConDJ == true, vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID_AUTENTICAR_4, cantidad: 4) or
+					 Nacimiento(estaPadreConDJ == false, vista: Nacimiento.ACCION_VISTA_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID_AUTENTICAR_2, cantidad: 2)
+					)	
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 08 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES_AMBOS_SIN_ID_MADRE_SIN_DJ);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 1.2.2");
+        nacimiento.setAccion(vista);
+        nacimiento.setContinuarEvaluando(false);
+    end	
+	
+rule "09 NACIMIENTO - Caso Madre y Padre Presentes, Padre sin ID, Padre con DJ, CC o DP"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 1.3", nacimiento.getAccion() == Nacimiento.ACCION_VISTA_PADRE_SIN_ID) and		
+					(Nacimiento(estaPadreConDJ == true, vista: Nacimiento.ACCION_VISTA_PADRE_SIN_ID_AUTENTICAR_5, cantidad: 5)  or
+					 Nacimiento(estaPadreConDJ == false, vista: Nacimiento.ACCION_VISTA_PADRE_SIN_ID_AUTENTICAR_3, cantidad: 3)
+					)
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 09 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES_PADRE_SIN_ID);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 1.3.1");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(false);
+    end
+
+rule "10 NACIMIENTO - Caso Madre y Padre Presentes, Madre sin ID, Madre con DJ, CC, o DP"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 1.3", nacimiento.getAccion() == Nacimiento.ACCION_VISTA_MADRE_SIN_ID) and		
+					(Nacimiento(estaMadreConDJ == true, vista: Nacimiento.ACCION_VISTA_MADRE_SIN_ID_AUTENTICAR_5, cantidad: 5)  or
+					 Nacimiento(estaMadreConDJ == false, vista: Nacimiento.ACCION_VISTA_MADRE_SIN_ID_AUTENTICAR_3, cantidad: 3)
+					)
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 10 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_Y_PADRE_PRESENTES_MADRE_SIN_ID);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 1.3.2");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(false);
+    end
+
+rule "11 NACIMIENTO - Caso Madre o Padre Presentes, con ID"
+    when        
+	
+        nacimiento: Nacimiento(escenario == "GATE 2") and 
+					(Nacimiento(accion == Nacimiento.ACCION_VISTA_MADRE_PRESENTE, estaMadreConID == true, vista: Nacimiento.ACCION_VISTA_MADRE_PRESENTE_CON_ID_AUTENTICAR_3, cantidad: 3) or
+					 Nacimiento(accion == Nacimiento.ACCION_VISTA_PADRE_PRESENTE, estaPadreConID == true, vista: Nacimiento.ACCION_VISTA_PADRE_PRESENTE_CON_ID_AUTENTICAR_3, cantidad: 3) 
+					)
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 11 ******");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_O_PADRE_PRESENTE_CON_ID);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 2.1");
+        nacimiento.setAccion(vista);
+        nacimiento.setContinuarEvaluando(false);
+    end
+
+rule "12 NACIMIENTO - Caso Madre o Padre Presentes, sin ID"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 2") and 
+					(Nacimiento(accion == Nacimiento.ACCION_VISTA_MADRE_PRESENTE, estaMadreConID == false, vista: Nacimiento.ACCION_VISTA_MADRE_PRESENTE_SIN_ID) or
+					 Nacimiento(accion == Nacimiento.ACCION_VISTA_PADRE_PRESENTE, estaPadreConID == false, vista: Nacimiento.ACCION_VISTA_PADRE_PRESENTE_SIN_ID) 
+					)
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 12 ******");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_O_PADRE_PRESENTE_SIN_ID);
+        System.out.println("");
+
+        nacimiento.setEscenario("GATE 2.2");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(true);
+    end
+	
+rule "13 NACIMIENTO - Caso Madre o Padre Presentes, Padre sin ID, Padre con DJ, CC o DP"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 2.2", nacimiento.getAccion() == Nacimiento.ACCION_VISTA_PADRE_PRESENTE_SIN_ID) and		
+					(Nacimiento(estaPadreConDJ == true, vista: Nacimiento.ACCION_VISTA_PADRE_PRESENTE_SIN_ID_AUTENTICAR_5, cantidad: 5)  or
+					 Nacimiento(estaPadreConDJ == false, vista: Nacimiento.ACCION_VISTA_PADRE_PRESENTE_SIN_ID_AUTENTICAR_3, cantidad: 3)
+					)					
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 13 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_O_PADRE_PRESENTE_PADRE_SIN_ID);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 2.2.1");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(false);
+    end
+
+rule "14 NACIMIENTO - Caso Madre o Padre Presentes, Madre sin ID, Madre con DJ, CC, o DP"
+    when        
+        nacimiento: Nacimiento(escenario == "GATE 2.2", nacimiento.getAccion() == Nacimiento.ACCION_VISTA_MADRE_PRESENTE_SIN_ID) and		
+					(Nacimiento(estaMadreConDJ == true, vista: Nacimiento.ACCION_VISTA_MADRE_PRESENTE_SIN_ID_AUTENTICAR_5, cantidad: 5)  or
+					 Nacimiento(estaMadreConDJ == false, vista: Nacimiento.ACCION_VISTA_MADRE_PRESENTE_SIN_ID_AUTENTICAR_3, cantidad: 3)
+					)					
+    then     	  
+    	System.out.println("");
+     	System.out.println("****** DROOLS REGLA 14 **********");
+        System.out.println("=====> Drools: ES "+ Nacimiento.CASO_MADRE_O_PADRE_PRESENTE_MADRE_SIN_ID);
+        System.out.println("");
+
+		nacimiento.setCantParticipantes(cantidad);
+        nacimiento.setEscenario("GATE 2.2.2");
+        nacimiento.setAccion(vista);       
+        nacimiento.setContinuarEvaluando(false);
+    end
