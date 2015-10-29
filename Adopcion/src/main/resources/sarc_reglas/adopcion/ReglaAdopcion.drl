@@ -19,14 +19,14 @@ rule "00 ADOPCION - INSCRIPCION"
                            )
     then
 	    System.out.println("HOLA HOLA T2");
-        UtilLog.log("****** DROOLS REGLA 0 **********");
+        UtilLog.log("****** DROOLS REGLA 0 ********** JOELVIN");
     	System.out.println("");
      	System.out.println("****** DROOLS REGLA 0 **********");
         System.out.println("=====> Drools: ES " + Adopcion.TIPO_REGISTRO_INSCRIPCION);
         System.out.println("");
 
         adopcion.setEscenario("GATE 1");
-        adopcion.setAccion(Adopcion.ACCION_VISTA_INSCRIPCION);
+        adopcion.setAccion(Adopcion.ACCIOJON_VISTA_INSCRIPCION);
         System.out.println("* * * * Action: " + adopcion.getAccion() );
         adopcion.setContinuarEvaluando(true);
     end
